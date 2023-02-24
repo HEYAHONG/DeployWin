@@ -347,7 +347,7 @@ static void deploywin_thread(deploywin_startup * obj)
                 printf("DLL(%s) need copy!\n",dll.c_str());
                 if(dllcopy(dll))
                 {
-                    printf("DLL(%s) copy sucess!\n",dll.c_str());
+                    printf("DLL(%s) copy success!\n",dll.c_str());
                 }
             }
 
