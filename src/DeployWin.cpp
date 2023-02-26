@@ -45,6 +45,11 @@ static std::string dllqueueget()
 static bool IsRunning=false;
 
 /*
+是否正在拷贝标志
+*/
+static bool IsCopying=true;
+
+/*
 获取环境变量函数
 */
 static std::string GetEnv(std::string key)
@@ -260,6 +265,15 @@ public:
             //枚举已加载的DLL
             enumloadeddll();
 
+            {
+                //等待当前队列的dll拷贝完成(主要是枚举的dll)
+                //若main函数快速退出（常见于console程序），则不等待有可能拷贝不能完成。在main函数执行前拷贝完成防止拷贝中断。
+                while(!dllqueueisempty() || IsCopying)
+                {
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+            }
+
         }
 
     }
@@ -341,6 +355,7 @@ static void deploywin_thread(deploywin_startup * obj)
     {
         while(!dllqueueisempty())
         {
+            IsCopying=true;
             std::string dll=dllqueueget();
             if(dllneedcopy(dll))
             {
@@ -350,6 +365,7 @@ static void deploywin_thread(deploywin_startup * obj)
                     printf("DLL(%s) copy success!\n",dll.c_str());
                 }
             }
+            IsCopying=false;
 
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
