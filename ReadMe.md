@@ -27,6 +27,19 @@
 
 # 环境变量设置
 
+## Windows Power shell
+
+PowerShell通过env:操作环境变量:
+
+```powershell
+#启用dll拷贝
+$env:DEPLOYWIN=1
+#关闭dll拷贝
+$env:DEPLOYWIN=0
+```
+
+
+
 ## cmd
 
 cmd中通过set命令设置环境变量:
