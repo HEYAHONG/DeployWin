@@ -21,24 +21,28 @@ endif()
 
 include(CheckIncludeFileCXX)
 
-check_include_file_cxx(unistd.h     HAVE_UNISTD_H)
-if(NOT HAVE_UNISTD_H)
-set(DEPLOYWIN_BUILD OFF)
-endif()
 
 check_include_file_cxx(windows.h    HAVE_WINDOWS_H)
 if(NOT  HAVE_WINDOWS_H)
 set(DEPLOYWIN_BUILD OFF)
 endif()
 
-check_include_file_cxx(ntstatus.h   HAVE_NTSTATUS_H)
-if(NOT  HAVE_NTSTATUS_H)
+
+include(CheckSymbolExists)
+
+check_symbol_exists(getenv "stdlib.h" HAVE_GETENV)
+if(NOT HAVE_GETENV)
 set(DEPLOYWIN_BUILD OFF)
 endif()
+
+check_symbol_exists(strcasecmp "string.h" HAVE_STRCASECMP)
+check_symbol_exists(stricmp "string.h" HAVE_STRICMP)
 
 
 if(MSVC)
     add_compile_options(-utf-8 )
+    #暂时不支持MSVC
+    set(DEPLOYWIN_BUILD OFF)
 endif()
 
 add_library(DeployWin STATIC)

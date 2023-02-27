@@ -6,11 +6,13 @@
 #include <queue>
 #include <mutex>
 #include "DeployWin.h"
-#include "unistd.h"
+#include "ntdef.h"
 #include "windows.h"
 #include "psapi.h"
-#include "ntdef.h"
-#include "ntstatus.h"
+
+#ifdef HAVE_STRICMP
+#define strcasecmp stricmp
+#endif // strcasecmp
 
 
 /*
@@ -144,8 +146,15 @@ static int GetAutoExit()
 /*
 注册加载dll回调
 */
-typedef const UNICODE_STRING* PCUNICODE_STRING;
+#ifndef STATUS_SUCCESS
+#define STATUS_SUCCESS 0
+#endif // STATUS_SUCCESS
 
+#ifndef PCUNICODE_STRING
+typedef const UNICODE_STRING* PCUNICODE_STRING;
+#endif // PCUNICODE_STRING
+
+#ifndef LDR_DLL_LOADED_NOTIFICATION_DATA
 typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA
 {
     ULONG Flags;                    //Reserved.
@@ -154,7 +163,9 @@ typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA
     PVOID DllBase;                  //A pointer to the base address for the DLL in memory.
     ULONG SizeOfImage;              //The size of the DLL image, in bytes.
 } LDR_DLL_LOADED_NOTIFICATION_DATA, *PLDR_DLL_LOADED_NOTIFICATION_DATA;
+#endif // LDR_DLL_LOADED_NOTIFICATION_DATA
 
+#ifndef LDR_DLL_UNLOADED_NOTIFICATION_DATA
 typedef struct _LDR_DLL_UNLOADED_NOTIFICATION_DATA
 {
     ULONG Flags;                    //Reserved.
@@ -163,17 +174,26 @@ typedef struct _LDR_DLL_UNLOADED_NOTIFICATION_DATA
     PVOID DllBase;                  //A pointer to the base address for the DLL in memory.
     ULONG SizeOfImage;              //The size of the DLL image, in bytes.
 } LDR_DLL_UNLOADED_NOTIFICATION_DATA, *PLDR_DLL_UNLOADED_NOTIFICATION_DATA;
+#endif // LDR_DLL_UNLOADED_NOTIFICATION_DATA
 
+#ifndef LDR_DLL_NOTIFICATION_DATA
 typedef union _LDR_DLL_NOTIFICATION_DATA
 {
     LDR_DLL_LOADED_NOTIFICATION_DATA Loaded;
     LDR_DLL_UNLOADED_NOTIFICATION_DATA Unloaded;
 } LDR_DLL_NOTIFICATION_DATA, *PLDR_DLL_NOTIFICATION_DATA;
+#endif // LDR_DLL_NOTIFICATION_DATA
 
+#ifndef PCLDR_DLL_NOTIFICATION_DATA
 typedef const LDR_DLL_NOTIFICATION_DATA * PCLDR_DLL_NOTIFICATION_DATA;
+#endif // PCLDR_DLL_NOTIFICATION_DATA
 
+#ifndef LDR_DLL_NOTIFICATION_REASON_LOADED
 #define LDR_DLL_NOTIFICATION_REASON_LOADED 1
+#endif // LDR_DLL_NOTIFICATION_REASON_LOADED
+#ifndef LDR_DLL_NOTIFICATION_REASON_UNLOADED
 #define LDR_DLL_NOTIFICATION_REASON_UNLOADED 2
+#endif // LDR_DLL_NOTIFICATION_REASON_UNLOADED
 
 typedef  VOID CALLBACK LdrDllNotification(
     _In_     ULONG                       NotificationReason,
@@ -181,7 +201,9 @@ typedef  VOID CALLBACK LdrDllNotification(
     _In_opt_ PVOID                       Context
 );
 
+#ifndef PLDR_DLL_NOTIFICATION_FUNCTION
 typedef  LdrDllNotification * PLDR_DLL_NOTIFICATION_FUNCTION;
+#endif // PLDR_DLL_NOTIFICATION_FUNCTION
 
 typedef NTSTATUS NTAPI (*LdrRegisterDllNotification_t)(
     _In_     ULONG                          Flags,
