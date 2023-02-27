@@ -15,7 +15,7 @@ function(deploywin_enable targetname)
 target_link_libraries(${targetname} DeployWin)
 endfunction()
 
-#通过deploywin install(必须时可执行文件，若为动态库则无效)
+#通过deploywin install(必须是可执行文件，若为动态库则无效)
 include(GNUInstallDirs)
 function(deploywin_install targetname)
 get_target_property(TARGET_TYPE ${targetname} TYPE)
