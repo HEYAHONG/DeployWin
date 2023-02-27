@@ -17,6 +17,9 @@ add_subdirectory(../ DeployWin)
 #启用DeployWin
 deploywin_enable(test)
 
+#使用deploywin安装
+deploywin_install(test)
+
 #添加源代码
 file(GLOB  TEST_CPP_C_FILES *.cpp *.CPP *.c *.C *.h)
 target_sources(test PUBLIC ${TEST_CPP_C_FILES})
