@@ -95,6 +95,51 @@ static std::string GetSystemRoot()
     return GetEnv("SYSTEMROOT");
 }
 
+/*
+判断是否是数字
+*/
+static bool string_is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
+
+/*
+是否启动DeployWin
+当检测到环境变量DEPLOYWIN=1时启动DeployWin线程
+*/
+bool StartDeployWin()
+{
+    return GetEnv("DEPLOYWIN")=="1";
+}
+
+/*
+自动退出时间
+*/
+static int GetAutoExit()
+{
+    std::string autoexit=GetEnv("DEPLOYWIN_AUTOEXIT");
+    if(string_is_number(autoexit))
+    {
+        int ret=-1;
+        try
+        {
+            ret=std::stoi(autoexit);
+        }
+        catch(...)
+        {
+
+        }
+        return ret;
+
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 
 /*
 注册加载dll回调
@@ -248,9 +293,9 @@ public:
             return;
         }
 
-        //当检测到环境变量DEPLOYWIN=1时启动DeployWin线程
-        if(GetEnv("DEPLOYWIN")=="1")
+        if(StartDeployWin())
         {
+            start_time=std::chrono::steady_clock::now();
             printf("DeployWin is starting.\nTo avoid this,DO NOT SET DEPLOYWIN=1.\n");
             if(LdrRegisterDllNotification(0,DeployWinLdrDllNotification,this,&Cookie)!= STATUS_SUCCESS)
             {
@@ -261,6 +306,11 @@ public:
 
             printf("SystemDir:%s\n",GetSystemRoot().c_str());
             printf("Dir:%s\n",GetCurrentProcessDir().c_str());
+
+            if(GetAutoExit()>0)
+            {
+                printf("AutoExit:%ds\n",GetAutoExit());
+            }
 
             //枚举已加载的DLL
             enumloadeddll();
@@ -286,6 +336,12 @@ public:
     }
 private:
     PVOID Cookie;
+    std::chrono::steady_clock::time_point start_time;
+public:
+    std::chrono::steady_clock::time_point GetStartTime()
+    {
+        return start_time;
+    }
 } g_deploywin_startup;
 
 static bool dllneedcopy(std::string dll)
@@ -367,6 +423,17 @@ static void deploywin_thread(deploywin_startup * obj)
             }
             IsCopying=false;
 
+        }
+        {
+            //自动退出
+            if(GetAutoExit()>0)
+            {
+                if(std::chrono::steady_clock::now()-obj->GetStartTime() > std::chrono::seconds(GetAutoExit()))
+                {
+                    printf("DeployWin will exit!\n");
+                    exit(0);
+                }
+            }
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
