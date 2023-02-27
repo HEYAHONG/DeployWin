@@ -1,6 +1,8 @@
 
 set(DEPLOYWIN_TARGET "@DEPLOYWIN_TARGET@")
 set(DEPLOYWIN_TARGET_DIR "@DEPLOYWIN_TARGET_DIR@")
+set(DEPLOYWIN_BUILD @DEPLOYWIN_BUILD@)
+if(DEPLOYWIN_BUILD)
 #主要用cmd.exe判断是不是Windows
 find_program(CMD NAMES cmd.exe)
 find_program(TARGET_EXECUTABLE 
@@ -19,5 +21,6 @@ message(NOTICE Execute:"${TARGET_EXECUTABLE}")
 execute_process(COMMAND "${TARGET_EXECUTABLE}"
 		WORKING_DIRECTORY "${DEPLOYWIN_TARGET_DIR}"
 		)
+endif()
 endif()
 endif()

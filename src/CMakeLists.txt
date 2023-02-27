@@ -65,5 +65,7 @@ target_sources(DeployWin PUBLIC ${DEPLOYWIN_CPP_FILES})
 target_include_directories(DeployWin PUBLIC ./)
 endif()
 
-
+set_target_properties(DeployWin
+                        PROPERTIES DEPLOYWIN_BUILD ${DEPLOYWIN_BUILD}
+                        )
 

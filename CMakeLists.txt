@@ -27,6 +27,7 @@ install(TARGETS ${targetname}
        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
 )
 get_target_property(DEPLOYWIN_ROOT_DIR DeployWin DEPLOYWIN_ROOT_DIR)
+get_target_property(DEPLOYWIN_BUILD DeployWin DEPLOYWIN_BUILD)
 set(DEPLOYWIN_TARGET "${targetname}")
 set(DEPLOYWIN_TARGET_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}")
 configure_file(${DEPLOYWIN_ROOT_DIR}/deploywin.cmake.in  ${CMAKE_BINARY_DIR}/deploywin.${targetname}.cmake @ONLY)
