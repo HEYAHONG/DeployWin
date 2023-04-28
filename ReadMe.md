@@ -24,7 +24,7 @@
 
 本工程主要支持CMake构建的工程,其它类型项目请直接添加[src](src)下（不包括子目录）的cpp文件。
 
-代码示例请参考[test](test)目录。
+代码示例请参考[test](test)目录,由doxygen生成的说明参考[DeployWin.chm](doc/doxygen/DeployWin.chm)。
 
 # 环境变量设置
 
